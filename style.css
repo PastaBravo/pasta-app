@@ -38,3 +38,15 @@ margin-bottom:10px;
 color:#e63946;
 font-weight:bold;
 }
+
+.addMore{
+margin:0 15px 15px;
+padding:14px;
+width:calc(100% - 30px);
+border:none;
+border-radius:10px;
+background:#555;
+color:white;
+font-size:18px;
+font-weight:bold;
+}

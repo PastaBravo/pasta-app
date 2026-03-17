@@ -66,8 +66,22 @@ font-weight:bold;
 color:#e74c3c;
 }
 
+/* ปุ่มสั่งเพิ่ม */
+.addMore{
+margin:0 15px 10px;
+padding:14px;
+width:calc(100% - 30px);
+border:none;
+border-radius:10px;
+background:#555;
+color:white;
+font-size:18px;
+font-weight:bold;
+}
+
+/* ปุ่มส่งออเดอร์ */
 .checkout{
-margin:15px;
+margin:0 15px 15px;
 padding:14px;
 width:calc(100% - 30px);
 border:none;
@@ -75,6 +89,7 @@ border-radius:10px;
 background:#e74c3c;
 color:white;
 font-size:18px;
+font-weight:bold;
 }
 </style>
 </head>
@@ -89,6 +104,10 @@ font-size:18px;
 รวม: <span id="totalPrice">0</span> บาท
 </div>
 
+<!-- ✅ ปุ่มสั่งเพิ่ม (อยู่บน) -->
+<button class="addMore" onclick="goMenu()">➕ สั่งเพิ่ม</button>
+
+<!-- ✅ ปุ่มส่งออเดอร์ -->
 <button class="checkout" onclick="checkout()">ส่งออเดอร์</button>
 
 <script>
@@ -160,6 +179,11 @@ localStorage.setItem("cart", JSON.stringify(cart));
 renderCart();
 }
 
+// ✅ ปุ่มสั่งเพิ่ม (ไม่ลบ cart)
+function goMenu(){
+window.location.href = "index.html";
+}
+
 async function checkout(){
 
 if(cart.length === 0){
@@ -183,6 +207,7 @@ body: JSON.stringify(order)
 
 alert("ส่งออเดอร์เรียบร้อย");
 
+// ลบ cart เฉพาะตอนสั่งจริง
 localStorage.removeItem("cart");
 
 window.location.href = "index.html";
