@@ -9,86 +9,181 @@
 
 <style>
 
-body{
-font-family:-apple-system, BlinkMacSystemFont;
-background:#f5f5f5;
-margin:0;
+/* ===== THEME ===== */
+:root{
+--primary:#b52627;
+--primary-dark:#8f1d1e;
+--cream:#f3e9cb;
+--dark:#231a1d;
+--accent:#2e7d32;
+--accent-dark:#256628;
+
+--radius:14px;
+--shadow:0 6px 16px rgba(0,0,0,0.08);
 }
 
-/* HEADER */
+/* ===== BASE ===== */
+body{
+font-family:-apple-system, BlinkMacSystemFont;
+background:var(--cream);
+margin:0;
+color:var(--dark);
+}
+
+/* ===== HEADER ===== */
 .header{
-background:#c0392b;
+background:var(--primary);
 color:white;
-padding:15px;
+padding:16px;
 text-align:center;
-font-size:22px;
+font-size:20px;
 font-weight:bold;
 }
 
-/* SECTION */
+/* ===== SECTION ===== */
 .section{
 padding:15px;
 }
 
 .section h2{
-margin-bottom:10px;
+margin-bottom:12px;
 }
 
-/* GRID */
+/* ===== GRID ===== */
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
 gap:15px;
 }
 
-/* CARD */
+/* ===== CARD ===== */
 .card{
 background:white;
-border-radius:14px;
+border-radius:var(--radius);
 overflow:hidden;
-box-shadow:0 3px 10px rgba(0,0,0,0.08);
+box-shadow:var(--shadow);
 transition:0.2s;
+}
+
+.card:hover{
+transform:translateY(-3px);
 }
 
 .card:active{
 transform:scale(0.97);
 }
 
-/* IMAGE */
+/* ===== IMAGE ===== */
 .card img{
 width:100%;
 height:140px;
 object-fit:cover;
 }
 
-/* TEXT */
+/* ===== TEXT ===== */
 .card h3{
 margin:10px;
 font-size:16px;
 }
 
 .price{
-color:#e74c3c;
+color:var(--primary);
 margin:0 10px;
 font-weight:bold;
 }
 
-/* BUTTON */
+/* ===== BUTTON ===== */
 button{
 margin:10px;
-padding:10px;
+padding:12px;
 width:calc(100% - 20px);
 border:none;
 border-radius:10px;
-background:#e74c3c;
+background:var(--accent);
 color:white;
 font-size:15px;
 font-weight:bold;
 transition:0.2s;
+
+/* ripple */
+position:relative;
+overflow:hidden;
+}
+
+button:hover{
+background:var(--accent-dark);
 }
 
 button:active{
-background:#c0392b;
+transform:scale(0.97);
+}
+
+/* RIPPLE EFFECT */
+button::after{
+content:"";
+position:absolute;
+width:10px;
+height:10px;
+background:rgba(255,255,255,0.5);
+border-radius:50%;
+transform:scale(0);
+opacity:0;
+pointer-events:none;
+}
+
+button:active::after{
+animation:ripple 0.4s linear;
+}
+
+@keyframes ripple{
+0%{transform:scale(0);opacity:0.7;}
+100%{transform:scale(10);opacity:0;}
+}
+
+/* ===== FLOATING CART ===== */
+.floating-cart{
+position:fixed;
+bottom:20px;
+right:20px;
+background:var(--primary);
+color:white;
+width:60px;
+height:60px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:22px;
+box-shadow:0 6px 16px rgba(0,0,0,0.2);
+cursor:pointer;
+z-index:999;
+transition:0.2s;
+}
+
+/* BADGE */
+#cartBadge{
+position:absolute;
+top:-5px;
+right:-5px;
+background:#ff3b30;
+color:white;
+font-size:12px;
+font-weight:bold;
+padding:4px 7px;
+border-radius:50%;
+min-width:20px;
+text-align:center;
+}
+
+/* POP ANIMATION */
+.pop{
+animation:pop 0.3s ease;
+}
+
+@keyframes pop{
+0%{transform:scale(1);}
+50%{transform:scale(1.3);}
+100%{transform:scale(1);}
 }
 
 </style>
@@ -109,21 +204,21 @@ background:#c0392b;
 <img src="images/carbonara.jpg">
 <h3>Carbonara</h3>
 <p class="price">139 บาท</p>
-<button onclick="selectMenu('Carbonara')">สั่งเลย</button>
+<button onclick="addAndAnimate('Carbonara')">สั่งเลย</button>
 </div>
 
 <div class="card">
 <img src="images/truffle-cream.jpg">
 <h3>Truffle Cream</h3>
 <p class="price">159 บาท</p>
-<button onclick="selectMenu('Truffle Cream')">สั่งเลย</button>
+<button onclick="addAndAnimate('Truffle Cream')">สั่งเลย</button>
 </div>
 
 <div class="card">
 <img src="images/seafood.jpg">
 <h3>Seafood</h3>
 <p class="price">159 บาท</p>
-<button onclick="selectMenu('Seafood')">สั่งเลย</button>
+<button onclick="addAndAnimate('Seafood')">สั่งเลย</button>
 </div>
 
 </div>
@@ -138,40 +233,91 @@ background:#c0392b;
 <div class="card">
 <img src="images/bolognese.jpg">
 <h3>Bolognese</h3>
-<p class="price">139</p>
-<button onclick="selectMenu('Bolognese')">สั่งเลย</button>
+<p class="price">139 บาท</p>
+<button onclick="addAndAnimate('Bolognese')">สั่งเลย</button>
 </div>
 
 <div class="card">
 <img src="images/pesto.jpg">
 <h3>Pesto</h3>
-<p class="price">139</p>
-<button onclick="selectMenu('Pesto')">สั่งเลย</button>
+<p class="price">139 บาท</p>
+<button onclick="addAndAnimate('Pesto')">สั่งเลย</button>
 </div>
 
 <div class="card">
 <img src="images/chili-bacon.jpg">
 <h3>Chili Bacon</h3>
-<p class="price">139</p>
-<button onclick="selectMenu('Chili Bacon')">สั่งเลย</button>
+<p class="price">139 บาท</p>
+<button onclick="addAndAnimate('Chili Bacon')">สั่งเลย</button>
 </div>
 
 <div class="card">
 <img src="images/aglio-olio.jpg">
 <h3>Aglio Olio</h3>
-<p class="price">129</p>
-<button onclick="selectMenu('Aglio Olio')">สั่งเลย</button>
+<p class="price">129 บาท</p>
+<button onclick="addAndAnimate('Aglio Olio')">สั่งเลย</button>
 </div>
 
 <div class="card">
 <img src="images/alfredo.jpg">
 <h3>Alfredo</h3>
-<p class="price">149</p>
-<button onclick="selectMenu('Alfredo')">สั่งเลย</button>
+<p class="price">149 บาท</p>
+<button onclick="addAndAnimate('Alfredo')">สั่งเลย</button>
 </div>
 
 </div>
 </div>
+
+<!-- FLOATING CART -->
+<div class="floating-cart" onclick="goCart()">
+🛒
+<span id="cartBadge">0</span>
+</div>
+
+<script>
+
+/* ===== CART COUNT ===== */
+function updateCartCount(animated = false){
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+let totalQty = 0;
+cart.forEach(item=>{
+totalQty += item.qty;
+});
+
+let badge = document.getElementById("cartBadge");
+badge.innerText = totalQty;
+badge.style.display = totalQty > 0 ? "block" : "none";
+
+if(animated){
+let btn = document.querySelector(".floating-cart");
+btn.classList.add("pop");
+
+setTimeout(()=>{
+btn.classList.remove("pop");
+},300);
+}
+}
+
+/* ===== ADD + ANIMATION ===== */
+function addAndAnimate(menuName){
+selectMenu(menuName); // เรียกของเดิมใน app.js
+updateCartCount(true);
+}
+
+/* ===== NAV ===== */
+function goCart(){
+window.location.href = "cart.html";
+}
+
+/* ===== INIT ===== */
+updateCartCount();
+
+window.addEventListener("focus", ()=>{
+updateCartCount();
+});
+
+</script>
 
 </body>
 </html>
