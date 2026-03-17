@@ -40,13 +40,22 @@ font-weight:bold;
 }
 
 .addMore{
-margin:0 15px 15px;
+margin:0 15px 10px;
 padding:14px;
 width:calc(100% - 30px);
 border:none;
 border-radius:10px;
-background:#555;
+background:#27ae60;
 color:white;
 font-size:18px;
 font-weight:bold;
+transition:0.2s;
+}
+
+.addMore:hover{
+background:#219150;
+}
+
+.addMore:active{
+transform:scale(0.97);
 }
