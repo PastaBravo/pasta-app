@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kitchen</title>
+
+<title>Kitchen PRO</title>
 
 <style>
 body{
@@ -12,125 +13,128 @@ background:#111;
 color:white;
 margin:0;
 }
+
 .header{
-background:#e74c3c;
+background:#c0392b;
 padding:15px;
 text-align:center;
 font-size:22px;
 font-weight:bold;
 }
+
 .container{
 padding:15px;
 }
-.order{
+
+.card{
 background:#222;
-border-radius:12px;
 padding:15px;
-margin-bottom:15px;
+border-radius:12px;
+margin-bottom:12px;
 }
-.order h3{
-margin:0 0 10px 0;
+
+.queue{
+font-size:26px;
+font-weight:bold;
 color:#f1c40f;
 }
-.item{
-border-bottom:1px solid #444;
-padding:5px 0;
-}
-.done{
-margin-top:10px;
-padding:10px;
-width:100%;
-background:#27ae60;
+
+.new{border-left:6px solid #f1c40f;}
+.cooking{border-left:6px solid #3498db;}
+.ready{border-left:6px solid #2ecc71;}
+.done{opacity:0.4;}
+
+button{
+margin:5px 5px 0 0;
+padding:6px 10px;
 border:none;
-color:white;
-font-weight:bold;
-border-radius:8px;
+border-radius:6px;
+font-size:14px;
 }
+
+.cook{background:#3498db;color:white;}
+.readyBtn{background:#27ae60;color:white;}
+.doneBtn{background:#555;color:white;}
 </style>
+
 </head>
 
 <body>
 
-<div class="header">👨‍🍳 หน้าครัว</div>
-<div class="container" id="orders"></div>
+<div class="header">🔥 Kitchen PRO</div>
+
+<div class="container" id="list"></div>
+
+<audio id="ding" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
 
 <script>
 
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/1TxQ4LKm739TFfjWLj0EpWm3sJR4c-lUrJkDvgFtkJ9w/gviz/tq?tqx=out:json&tq&gid=0";
+const API_URL = "https://script.google.com/macros/s/AKfycbylb0DcxAvjqdNk9SLrdUuf80svwCHJLQVMlozS_GA_5Tt6RAr20172Tcl_c1q7v7Zf/exec";
 
-// แปลง gviz → JSON
-function parseGViz(text){
-const json = JSON.parse(text.substring(47).slice(0,-2));
-return json.table.rows.map(r => r.c.map(c => c ? c.v : ""));
+let lastCount = 0;
+
+async function loadOrders(){
+
+let res = await fetch(API_URL);
+let data = await res.json();
+
+// 🔔 เสียงแจ้งเตือน
+if(data.length > lastCount){
+document.getElementById("ding").play();
 }
+lastCount = data.length;
 
-// group order
-function groupOrders(data){
-
-let orders = {};
-
-data.forEach(row => {
-
-let id = row[1];
-
-if(!orders[id]){
-orders[id] = [];
-}
-
-orders[id].push(row);
-
-});
-
-return orders;
-}
-
-function render(data){
-
-let grouped = groupOrders(data);
 let html = "";
 
-Object.keys(grouped).reverse().forEach(id => {
+data.reverse().forEach(order => {
 
-let items = grouped[id];
-
-html += `<div class="order">
-<h3>Order #${id}</h3>`;
-
-items.forEach(row => {
+let cls = order.status.toLowerCase();
 
 html += `
-<div class="item">
-${row[2]} x${row[6]}
-<br>
-<small>${row[3]} | ${row[4]} | ${row[5]}</small>
+<div class="card ${cls}">
+<div class="queue">#${order.queue}</div>
+
+<div><b>${order.menu}</b> x${order.qty}</div>
+<div>${order.pasta} | ${order.protein}</div>
+<div>${order.topping}</div>
+<div>${order.time}</div>
+
+<div>
+${order.status === "NEW" ? `<button class="cook" onclick="update(${order.row},'COOKING')">เริ่มทำ</button>` : ""}
+
+${order.status === "COOKING" ? `<button class="readyBtn" onclick="update(${order.row},'READY')">เสร็จแล้ว</button>` : ""}
+
+${order.status === "READY" ? `<button class="doneBtn" onclick="update(${order.row},'DONE')">รับแล้ว</button>` : ""}
+</div>
+
 </div>
 `;
 
 });
 
-html += `<button class="done" onclick="this.parentElement.remove()">เสร็จแล้ว</button>`;
-html += `</div>`;
-
-});
-
-document.getElementById("orders").innerHTML = html;
+document.getElementById("list").innerHTML = html;
 
 }
 
-// โหลดข้อมูล
-function loadData(){
+// update status
+async function update(row,status){
 
-fetch(SHEET_URL)
-.then(res => res.text())
-.then(text => {
-const data = parseGViz(text);
-render(data);
+await fetch(API_URL,{
+method:"POST",
+body: JSON.stringify({
+action:"update",
+row: row,
+status: status
+})
 });
 
+loadOrders();
 }
 
-setInterval(loadData,5000);
-loadData();
+// auto refresh
+setInterval(loadOrders, 3000);
+
+loadOrders();
 
 </script>
 
