@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>💰 Cashier</h1>
+
+<select id="table">
+<option>1</option>
+<option>2</option>
+<option>3</option>
+<option>4</option>
+<option>5</option>
+</select>
+
+<button onclick="loadBill()">Load</button>
+
+<div id="bill"></div>
+
+<button onclick="closeTable()">Close Table</button>
+
+<script>
+
+const API="PUT_YOUR_SCRIPT_URL";
+
+let currentTable=1;
+
+async function loadBill(){
+
+let table=document.getElementById("table").value;
+currentTable=table;
+
+let res=await fetch(API);
+let data=await res.json();
+
+let total=0;
+let html="";
+
+data.forEach(o=>{
+if(o.table==table){
+html+=o.menu+" "+o.price+"<br>";
+total+=Number(o.price);
+}
+});
+
+html+="<hr>Total "+total;
+
+document.getElementById("bill").innerHTML=html;
+
+}
+
+async function closeTable(){
+
+let res=await fetch(API);
+let data=await res.json();
+
+data.forEach(o=>{
+if(o.table==currentTable){
+fetch(API+"?action=update&row="+o.row+"&status=CLOSED");
+}
+});
+
+alert("Table Closed");
+
+}
+
+</script>
+
+</body>
+</html>

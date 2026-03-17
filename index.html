@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pasta Bravo</title>
+
+<script src="app.js"></script>
+
+<style>
+
+body{
+font-family:-apple-system, BlinkMacSystemFont;
+background:#f5f5f5;
+margin:0;
+}
+
+/* HEADER */
+.header{
+background:#c0392b;
+color:white;
+padding:15px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
+}
+
+/* SECTION */
+.section{
+padding:15px;
+}
+
+.section h2{
+margin-bottom:10px;
+}
+
+/* GRID */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+gap:15px;
+}
+
+/* CARD */
+.card{
+background:white;
+border-radius:14px;
+overflow:hidden;
+box-shadow:0 3px 10px rgba(0,0,0,0.08);
+transition:0.2s;
+}
+
+.card:active{
+transform:scale(0.97);
+}
+
+/* IMAGE */
+.card img{
+width:100%;
+height:140px;
+object-fit:cover;
+}
+
+/* TEXT */
+.card h3{
+margin:10px;
+font-size:16px;
+}
+
+.price{
+color:#e74c3c;
+margin:0 10px;
+font-weight:bold;
+}
+
+/* BUTTON */
+button{
+margin:10px;
+padding:10px;
+width:calc(100% - 20px);
+border:none;
+border-radius:10px;
+background:#e74c3c;
+color:white;
+font-size:15px;
+font-weight:bold;
+transition:0.2s;
+}
+
+button:active{
+background:#c0392b;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">🍝 Pasta Bravo</div>
+
+<!-- Recommended -->
+<div class="section">
+<h2>🔥 Recommended</h2>
+
+<div class="grid">
+
+<div class="card">
+<img src="images/carbonara.jpg">
+<h3>Carbonara</h3>
+<p class="price">139 บาท</p>
+<button onclick="selectMenu('Carbonara')">สั่งเลย</button>
+</div>
+
+<div class="card">
+<img src="images/truffle-cream.jpg">
+<h3>Truffle Cream</h3>
+<p class="price">159 บาท</p>
+<button onclick="selectMenu('Truffle Cream')">สั่งเลย</button>
+</div>
+
+<div class="card">
+<img src="images/seafood.jpg">
+<h3>Seafood</h3>
+<p class="price">159 บาท</p>
+<button onclick="selectMenu('Seafood')">สั่งเลย</button>
+</div>
+
+</div>
+</div>
+
+<!-- All Menu -->
+<div class="section">
+<h2>🍝 All Menu</h2>
+
+<div class="grid">
+
+<div class="card">
+<img src="images/bolognese.jpg">
+<h3>Bolognese</h3>
+<p class="price">139</p>
+<button onclick="selectMenu('Bolognese')">สั่งเลย</button>
+</div>
+
+<div class="card">
+<img src="images/pesto.jpg">
+<h3>Pesto</h3>
+<p class="price">139</p>
+<button onclick="selectMenu('Pesto')">สั่งเลย</button>
+</div>
+
+<div class="card">
+<img src="images/chili-bacon.jpg">
+<h3>Chili Bacon</h3>
+<p class="price">139</p>
+<button onclick="selectMenu('Chili Bacon')">สั่งเลย</button>
+</div>
+
+<div class="card">
+<img src="images/aglio-olio.jpg">
+<h3>Aglio Olio</h3>
+<p class="price">129</p>
+<button onclick="selectMenu('Aglio Olio')">สั่งเลย</button>
+</div>
+
+<div class="card">
+<img src="images/alfredo.jpg">
+<h3>Alfredo</h3>
+<p class="price">149</p>
+<button onclick="selectMenu('Alfredo')">สั่งเลย</button>
+</div>
+
+</div>
+</div>
+
+</body>
+</html>

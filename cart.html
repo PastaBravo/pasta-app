@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cart</title>
+
+<style>
+body{
+font-family:-apple-system;
+background:#f5f5f5;
+margin:0;
+}
+
+.header{
+background:#c0392b;
+color:white;
+padding:15px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
+}
+
+.container{
+padding:15px;
+}
+
+.item{
+background:white;
+border-radius:12px;
+padding:12px;
+margin-bottom:10px;
+box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+.name{
+font-weight:bold;
+font-size:16px;
+}
+
+.detail{
+font-size:13px;
+color:#555;
+margin-top:5px;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-top:10px;
+}
+
+.qty button{
+padding:5px 10px;
+border:none;
+background:#ddd;
+border-radius:6px;
+}
+
+.total{
+font-size:22px;
+text-align:center;
+margin:20px;
+font-weight:bold;
+color:#e74c3c;
+}
+
+.checkout{
+margin:15px;
+padding:14px;
+width:calc(100% - 30px);
+border:none;
+border-radius:10px;
+background:#e74c3c;
+color:white;
+font-size:18px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">🛒 ตะกร้า</div>
+
+<div class="container" id="cartList"></div>
+
+<div class="total">
+รวม: <span id="totalPrice">0</span> บาท
+</div>
+
+<button class="checkout" onclick="checkout()">ส่งออเดอร์</button>
+
+<script>
+
+const API_URL = "https://script.google.com/macros/s/AKfycbzq2W51kuODlXkVycwWxQEerL6i7RMjWczZWFp3pX9fbCo6Alqq2KH7KXMisS9L8jLu/exec";
+
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+function renderCart(){
+
+let html = "";
+let total = 0;
+
+cart.forEach((item, index)=>{
+
+total += item.price * item.qty;
+
+html += `
+<div class="item">
+<div class="name">${item.menu}</div>
+<div class="detail">
+${item.pasta} | ${item.protein}<br>
+${item.topping}
+</div>
+
+<div class="row">
+<div class="qty">
+<button onclick="changeQty(${index},-1)">-</button>
+${item.qty}
+<button onclick="changeQty(${index},1)">+</button>
+</div>
+
+<div>
+${item.price * item.qty} บาท
+</div>
+
+<button onclick="removeItem(${index})">❌</button>
+
+</div>
+</div>
+`;
+
+});
+
+document.getElementById("cartList").innerHTML = html;
+document.getElementById("totalPrice").innerText = total;
+
+}
+
+renderCart();
+
+function changeQty(i,delta){
+cart[i].qty += delta;
+
+if(cart[i].qty <= 0){
+cart.splice(i,1);
+}
+
+saveCart();
+}
+
+function removeItem(i){
+cart.splice(i,1);
+saveCart();
+}
+
+function saveCart(){
+localStorage.setItem("cart", JSON.stringify(cart));
+renderCart();
+}
+
+async function checkout(){
+
+if(cart.length === 0){
+alert("ไม่มีสินค้า");
+return;
+}
+
+let order = {
+time: new Date().toLocaleString(),
+items: cart
+};
+
+console.log("SEND:", order);
+
+try{
+
+await fetch(API_URL,{
+method:"POST",
+body: JSON.stringify(order)
+});
+
+alert("ส่งออเดอร์เรียบร้อย");
+
+localStorage.removeItem("cart");
+
+window.location.href = "index.html";
+
+}catch(err){
+alert("ส่งไม่สำเร็จ");
+console.error(err);
+}
+
+}
+
+</script>
+
+</body>
+</html>

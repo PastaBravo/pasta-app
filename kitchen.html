@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kitchen</title>
+
+<style>
+body{
+font-family:-apple-system;
+background:#111;
+color:white;
+margin:0;
+}
+.header{
+background:#e74c3c;
+padding:15px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
+}
+.container{
+padding:15px;
+}
+.order{
+background:#222;
+border-radius:12px;
+padding:15px;
+margin-bottom:15px;
+}
+.order h3{
+margin:0 0 10px 0;
+color:#f1c40f;
+}
+.item{
+border-bottom:1px solid #444;
+padding:5px 0;
+}
+.done{
+margin-top:10px;
+padding:10px;
+width:100%;
+background:#27ae60;
+border:none;
+color:white;
+font-weight:bold;
+border-radius:8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">👨‍🍳 หน้าครัว</div>
+<div class="container" id="orders"></div>
+
+<script>
+
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/1TxQ4LKm739TFfjWLj0EpWm3sJR4c-lUrJkDvgFtkJ9w/gviz/tq?tqx=out:json&tq&gid=0";
+
+// แปลง gviz → JSON
+function parseGViz(text){
+const json = JSON.parse(text.substring(47).slice(0,-2));
+return json.table.rows.map(r => r.c.map(c => c ? c.v : ""));
+}
+
+// group order
+function groupOrders(data){
+
+let orders = {};
+
+data.forEach(row => {
+
+let id = row[1];
+
+if(!orders[id]){
+orders[id] = [];
+}
+
+orders[id].push(row);
+
+});
+
+return orders;
+}
+
+function render(data){
+
+let grouped = groupOrders(data);
+let html = "";
+
+Object.keys(grouped).reverse().forEach(id => {
+
+let items = grouped[id];
+
+html += `<div class="order">
+<h3>Order #${id}</h3>`;
+
+items.forEach(row => {
+
+html += `
+<div class="item">
+${row[2]} x${row[6]}
+<br>
+<small>${row[3]} | ${row[4]} | ${row[5]}</small>
+</div>
+`;
+
+});
+
+html += `<button class="done" onclick="this.parentElement.remove()">เสร็จแล้ว</button>`;
+html += `</div>`;
+
+});
+
+document.getElementById("orders").innerHTML = html;
+
+}
+
+// โหลดข้อมูล
+function loadData(){
+
+fetch(SHEET_URL)
+.then(res => res.text())
+.then(text => {
+const data = parseGViz(text);
+render(data);
+});
+
+}
+
+setInterval(loadData,5000);
+loadData();
+
+</script>
+
+</body>
+</html>

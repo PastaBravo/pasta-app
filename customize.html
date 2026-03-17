@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customize</title>
+
+<style>
+body{
+font-family:-apple-system, BlinkMacSystemFont;
+background:#f5f5f5;
+margin:0;
+}
+
+.header{
+background:#c0392b;
+color:white;
+padding:15px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
+}
+
+.section{
+padding:15px;
+}
+
+.section h2{
+margin-bottom:10px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+gap:15px;
+}
+
+.card{
+background:white;
+border-radius:14px;
+overflow:hidden;
+box-shadow:0 3px 10px rgba(0,0,0,0.08);
+cursor:pointer;
+transition:0.2s;
+}
+
+.card:active{
+transform:scale(0.97);
+}
+
+.card.active{
+outline:3px solid #e74c3c;
+}
+
+.card img{
+width:100%;
+height:140px;
+object-fit:cover;
+}
+
+.card h3{
+margin:10px;
+font-size:16px;
+text-align:center;
+}
+
+.price{
+text-align:center;
+color:#e74c3c;
+font-weight:bold;
+margin-bottom:10px;
+}
+
+.total{
+font-size:22px;
+color:#e74c3c;
+font-weight:bold;
+text-align:center;
+margin:15px;
+}
+
+button{
+margin:10px;
+padding:12px;
+width:calc(100% - 20px);
+border:none;
+border-radius:10px;
+background:#e74c3c;
+color:white;
+font-size:16px;
+font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">🍝 Customize</div>
+
+<div class="section">
+<h2 id="menuName"></h2>
+</div>
+
+<!-- ✅ เลือกเส้น -->
+<div class="section pasta-section">
+<h2>เลือกเส้น</h2>
+<div class="grid">
+
+<div class="card active" onclick="selectOption(this,'pasta',0)">
+<img src="images/spaghetti.jpg">
+<h3>สปาเก็ตตี้</h3>
+<p class="price">+0</p>
+</div>
+
+<div class="card" onclick="selectOption(this,'pasta',0)">
+<img src="images/penne.jpg">
+<h3>เพนเน</h3>
+<p class="price">+0</p>
+</div>
+
+<div class="card" onclick="selectOption(this,'pasta',0)">
+<img src="images/angel.jpg">
+<h3>แองเจิลแฮร์</h3>
+<p class="price">+0</p>
+</div>
+
+<div class="card" onclick="selectOption(this,'pasta',20)">
+<img src="images/fettuccine.jpg">
+<h3>เฟตตูชินี</h3>
+<p class="price">+20</p>
+</div>
+
+<div class="card" onclick="selectOption(this,'pasta',20)">
+<img src="images/bucatini.jpg">
+<h3>บูคาตินี</h3>
+<p class="price">+20</p>
+</div>
+
+</div>
+</div>
+
+<!-- ✅ เนื้อ -->
+<div class="section protein-section">
+<h2>เลือกเนื้อสัตว์</h2>
+<div class="grid">
+
+<div class="card active" onclick="selectOption(this,'protein',0)">
+<img src="images/bacon.jpg">
+<h3>เบคอน</h3>
+<p class="price">+0</p>
+</div>
+
+<div class="card" onclick="selectOption(this,'protein',0)">
+<img src="images/sausage.jpg">
+<h3>ดับเบิ้ลซอสเซจ</h3>
+<p class="price">+0</p>
+</div>
+
+<div class="card" onclick="selectOption(this,'protein',10)">
+<img src="images/chicken.jpg">
+<h3>สเต็กไก่ซูวี</h3>
+<p class="price">+10</p>
+</div>
+
+<div class="card" onclick="selectOption(this,'protein',10)">
+<img src="images/spicy-chicken.jpg">
+<h3>ไก่สไปซี่กาลิค</h3>
+<p class="price">+10</p>
+</div>
+
+<div class="card" onclick="selectOption(this,'protein',30)">
+<img src="images/beef.jpg">
+<h3>เนื้อออส</h3>
+<p class="price">+30</p>
+</div>
+
+<div class="card" onclick="selectOption(this,'protein',30)">
+<img src="images/shrimp.jpg">
+<h3>กุ้ง</h3>
+<p class="price">+30</p>
+</div>
+
+</div>
+</div>
+
+<!-- ✅ TOPPING -->
+<div class="section topping-section">
+<h2>เพิ่มท็อปปิ้ง</h2>
+<div class="grid">
+
+<div class="card" onclick="toggleTopping(this,20)">
+<img src="images/crispy-bacon.jpg">
+<h3>เบคอนกรอบ</h3>
+<p class="price">+20</p>
+</div>
+
+<div class="card" onclick="toggleTopping(this,20)">
+<img src="images/seaweed.jpg">
+<h3>สาหร่าย</h3>
+<p class="price">+20</p>
+</div>
+
+<div class="card" onclick="toggleTopping(this,20)">
+<img src="images/ebiko.jpg">
+<h3>ไข่กุ้ง</h3>
+<p class="price">+20</p>
+</div>
+
+<div class="card" onclick="toggleTopping(this,20)">
+<img src="images/cheese.jpg">
+<h3>ชีส</h3>
+<p class="price">+20</p>
+</div>
+
+</div>
+</div>
+
+<div class="total">
+รวม: <span id="totalPrice">0</span> บาท
+</div>
+
+<button onclick="addToCart()">เพิ่มลงตะกร้า</button>
+
+<script>
+
+// menu
+const params = new URLSearchParams(window.location.search);
+const menu = params.get("menu");
+document.getElementById("menuName").innerText = menu;
+
+// ราคา base
+const priceMap = {
+"Carbonara":139,
+"Bolognese":139,
+"Pesto":139,
+"Chili Bacon":139,
+"Aglio Olio":129,
+"Seafood":159,
+"Alfredo":149,
+"Truffle Cream":159
+};
+
+let basePrice = priceMap[menu] || 0;
+
+let pastaPrice = 0;
+let proteinPrice = 0;
+let toppingTotal = 0;
+
+function selectOption(el,type,price){
+let group = el.parentElement;
+group.querySelectorAll(".card").forEach(c=>c.classList.remove("active"));
+el.classList.add("active");
+
+if(type==="pasta") pastaPrice = price;
+if(type==="protein") proteinPrice = price;
+
+calculate();
+}
+
+function toggleTopping(el,price){
+el.classList.toggle("active");
+
+if(el.classList.contains("active")){
+toppingTotal += price;
+}else{
+toppingTotal -= price;
+}
+
+calculate();
+}
+
+function calculate(){
+let total = basePrice + pastaPrice + proteinPrice + toppingTotal;
+document.getElementById("totalPrice").innerText = total;
+}
+
+calculate();
+
+// ✅ FIXED addToCart
+
+function addToCart(){
+
+console.log("CLICK ADD");
+
+let pastaEl = document.querySelector('.pasta-section .card.active h3');
+let proteinEl = document.querySelector('.protein-section .card.active h3');
+
+console.log("PASTA:", pastaEl);
+console.log("PROTEIN:", proteinEl);
+
+if(!pastaEl || !proteinEl){
+alert("กรุณาเลือกเส้นและเนื้อ");
+return;
+}
+
+let toppings = [];
+document.querySelectorAll('.topping-section .card.active h3')
+.forEach(el => toppings.push(el.innerText));
+
+let item = {
+menu: menu,
+pasta: pastaEl.innerText,
+protein: proteinEl.innerText,
+topping: toppings.join(", ") || "-",
+price: parseInt(document.getElementById("totalPrice").innerText),
+qty: 1
+};
+
+console.log("ITEM:", item);
+
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+cart.push(item);
+
+localStorage.setItem("cart", JSON.stringify(cart));
+
+console.log("SAVED CART:", cart);
+
+window.location.href = "cart.html";
+}
+
+</script>
+
+</body>
+</html>
