@@ -72,7 +72,6 @@ background:#eee;
 border-radius:6px;
 }
 
-/* ปุ่มลบ */
 .remove-btn{
 background:#eee;
 border:none;
@@ -89,12 +88,10 @@ font-weight:bold;
 color:var(--primary);
 }
 
-/* ปุ่ม */
 button{
 cursor:pointer;
 }
 
-/* สั่งเพิ่ม */
 .addMore{
 margin:0 15px 10px;
 padding:15px;
@@ -105,18 +102,8 @@ background:var(--success);
 color:white;
 font-size:18px;
 font-weight:bold;
-transition:0.2s;
 }
 
-.addMore:hover{
-background:var(--success-dark);
-}
-
-.addMore:active{
-transform:scale(0.97);
-}
-
-/* ส่งออเดอร์ */
 .checkout{
 margin:0 15px 20px;
 padding:15px;
@@ -127,15 +114,6 @@ background:var(--primary);
 color:white;
 font-size:18px;
 font-weight:bold;
-transition:0.2s;
-}
-
-.checkout:hover{
-background:var(--primary-dark);
-}
-
-.checkout:active{
-transform:scale(0.97);
 }
 </style>
 </head>
@@ -155,13 +133,12 @@ transform:scale(0.97);
 
 <script>
 
-const API_URL = "https://script.google.com/macros/s/AKfycbylb0DcxAvjqdNk9SLrdUuf80svwCHJLQVMlozS_GA_5Tt6RAr20172Tcl_c1q7v7Zf/exec";
-
+// ✅ โหลด cart
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
+// ===== RENDER =====
 function renderCart(){
 
-// ✅ กรณี cart ว่าง
 if(cart.length === 0){
 document.getElementById("cartList").innerHTML = `
 <div style="text-align:center;padding:40px;color:#777">
@@ -208,11 +185,11 @@ ${(item.price * item.qty).toLocaleString()} บาท
 
 document.getElementById("cartList").innerHTML = html;
 document.getElementById("totalPrice").innerText = total.toLocaleString();
-
 }
 
 renderCart();
 
+// ===== QTY =====
 function changeQty(i,delta){
 cart[i].qty += delta;
 
@@ -233,40 +210,24 @@ localStorage.setItem("cart", JSON.stringify(cart));
 renderCart();
 }
 
+// ===== NAV =====
 function goMenu(){
 window.location.href = "index.html";
 }
 
-async function checkout(){
+// ===== CHECKOUT (แก้แล้ว) =====
+function checkout(){
 
 if(cart.length === 0){
 alert("ไม่มีสินค้า");
 return;
 }
 
-let order = {
-time: new Date().toLocaleString(),
-items: cart
-};
+// ❗ ไม่ยิง API
+// ❗ ไม่ลบ cart
 
-try{
-
-await fetch(API_URL,{
-method:"POST",
-body: JSON.stringify(order)
-});
-
-alert("ส่งออเดอร์เรียบร้อย");
-
-localStorage.removeItem("cart");
-
-window.location.href = "index.html";
-
-}catch(err){
-alert("ส่งไม่สำเร็จ");
-console.error(err);
-}
-
+// 👉 ไปหน้า cashier
+window.location.href = "cashier.html";
 }
 
 </script>
