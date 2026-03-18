@@ -3,32 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cashier</title>
+<title>Cashier POS</title>
 
 <style>
-
-/* THEME */
 :root{
 --primary:#b52627;
 --cream:#f3e9cb;
 --dark:#231a1d;
+--success:#2e7d32;
 }
 
 body{
-font-family:-apple-system, BlinkMacSystemFont;
-background:var(--cream);
+font-family:-apple-system;
 margin:0;
-color:var(--dark);
+background:var(--cream);
 }
 
 /* HEADER */
 .header{
 background:var(--primary);
 color:white;
-padding:16px;
+padding:15px;
 text-align:center;
 font-size:20px;
 font-weight:bold;
+}
+
+/* SEARCH */
+.search-box{
+padding:15px;
+display:flex;
+gap:10px;
+}
+
+.search-box input{
+flex:1;
+padding:14px;
+font-size:20px;
+border-radius:10px;
+border:1px solid #ccc;
+}
+
+/* NUMPAD */
+.numpad{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:10px;
+padding:15px;
+}
+
+.numpad button{
+padding:20px;
+font-size:20px;
+border:none;
+border-radius:10px;
+background:white;
 }
 
 /* RECEIPT */
@@ -36,107 +65,190 @@ font-weight:bold;
 background:white;
 margin:15px;
 padding:15px;
-border-radius:12px;
+border-radius:10px;
 }
 
-/* ITEM */
-.item{
-display:flex;
-justify-content:space-between;
-margin-bottom:12px;
-border-bottom:1px dashed #ddd;
-padding-bottom:8px;
-}
-
-.item-name{
-font-weight:bold;
-}
-
-.item-sub{
-font-size:12px;
-color:#777;
-}
-
-/* TOTAL */
 .total{
+font-size:22px;
+font-weight:bold;
 text-align:right;
-font-size:20px;
-font-weight:bold;
-margin-top:15px;
 }
 
-/* BUTTON */
-.btn{
-margin:15px;
+/* PAYMENT */
+.payment{
 padding:15px;
-width:calc(100% - 30px);
-border:none;
-border-radius:12px;
-background:#2e7d32;
-color:white;
-font-size:16px;
-font-weight:bold;
 }
 
-</style>
+.payment input{
+width:100%;
+padding:14px;
+font-size:18px;
+margin-bottom:10px;
+}
 
+.payment button{
+width:100%;
+padding:14px;
+background:var(--success);
+color:white;
+border:none;
+border-radius:10px;
+font-size:18px;
+}
+
+/* PRINT */
+.print-btn{
+margin:15px;
+padding:14px;
+width:calc(100% - 30px);
+background:#231a1d;
+color:white;
+border:none;
+border-radius:10px;
+}
+
+/* PRINT MODE */
+@media print{
+.numpad,.search-box,.payment,.print-btn{
+display:none;
+}
+}
+</style>
 </head>
 
 <body>
 
-<div class="header">🧾 ใบเสร็จ</div>
+<div class="header">🍝 Pasta Bravo POS</div>
 
-<div class="receipt" id="receiptList">
-<!-- รายการ -->
+<div class="search-box">
+<input id="search" placeholder="เลขออเดอร์">
 </div>
 
-<div class="total">
-รวมทั้งหมด: <span id="grandTotal">0</span> บาท
+<div class="numpad">
+<button onclick="press(1)">1</button>
+<button onclick="press(2)">2</button>
+<button onclick="press(3)">3</button>
+<button onclick="press(4)">4</button>
+<button onclick="press(5)">5</button>
+<button onclick="press(6)">6</button>
+<button onclick="press(7)">7</button>
+<button onclick="press(8)">8</button>
+<button onclick="press(9)">9</button>
+<button onclick="clearInput()">C</button>
+<button onclick="press(0)">0</button>
+<button onclick="searchOrder()">🔍</button>
 </div>
 
-<button class="btn" onclick="confirmOrder()">ยืนยันคำสั่งซื้อ</button>
+<div class="receipt" id="receiptBox">รอค้นหาออเดอร์</div>
+
+<div class="payment">
+<input id="receive" placeholder="รับเงิน">
+<button onclick="calcChange()">คำนวณเงินทอน</button>
+<div id="change"></div>
+</div>
+
+<button class="print-btn" onclick="window.print()">🖨 พิมพ์ใบเสร็จ</button>
 
 <script>
 
-// ===== LOAD CART =====
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+const API_URL = "https://script.google.com/macros/s/AKfycbylb0DcxAvjqdNk9SLrdUuf80svwCHJLQVMlozS_GA_5Tt6RAr20172Tcl_c1q7v7Zf/exec";
 
-let receiptHTML = "";
-let total = 0;
+let rawData = [];
+let orders = [];
+let currentTotal = 0;
 
-cart.forEach((item, index)=>{
+let audio = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
 
-let itemTotal = item.price * item.qty;
-total += itemTotal;
+// ===== LOAD =====
+async function loadOrders(){
+let res = await fetch(API_URL);
+rawData = await res.json();
+orders = groupOrders(rawData);
+}
 
-receiptHTML += `
-<div class="item">
-  <div>
-    <div class="item-name">${item.menu} x${item.qty}</div>
-    <div class="item-sub">
-      ${item.pasta} • ${item.protein}<br>
-      + ${item.topping}
-    </div>
-  </div>
-  <div>${itemTotal}฿</div>
-</div>
-`;
+// ===== GROUP =====
+function groupOrders(data){
+let map = {};
 
+data.forEach(row=>{
+let id = row.id;
+
+if(!map[id]){
+map[id] = {id:id,time:row.time,items:[]};
+}
+
+map[id].items.push(JSON.parse(row.item));
 });
 
-document.getElementById("receiptList").innerHTML = receiptHTML;
-document.getElementById("grandTotal").innerText = total;
-
-
-// ===== CONFIRM ORDER =====
-function confirmOrder(){
-
-alert("ออเดอร์สำเร็จ!");
-
-localStorage.removeItem("cart");
-
-window.location.href = "index.html";
+return Object.values(map);
 }
+
+// ===== NUMPAD =====
+function press(num){
+document.getElementById("search").value += num;
+}
+
+function clearInput(){
+document.getElementById("search").value = "";
+}
+
+// ===== SEARCH =====
+function searchOrder(){
+
+let key = document.getElementById("search").value;
+
+let order = orders.find(o => o.id.includes(key));
+
+if(!order){
+alert("ไม่พบ");
+return;
+}
+
+audio.play();
+
+render(order);
+}
+
+// ===== RENDER =====
+function render(order){
+
+let html = `
+<div><b>${order.id}</b></div>
+<div>${order.time}</div><hr>
+`;
+
+let total = 0;
+
+order.items.forEach(item=>{
+let sum = item.price * item.qty;
+total += sum;
+
+html += `
+<div>
+${item.menu} x${item.qty}<br>
+${sum.toLocaleString()} บาท
+<hr>
+</div>
+`;
+});
+
+html += `<div class="total">รวม ${total.toLocaleString()} บาท</div>`;
+
+currentTotal = total;
+
+document.getElementById("receiptBox").innerHTML = html;
+}
+
+// ===== CHANGE =====
+function calcChange(){
+let r = parseFloat(document.getElementById("receive").value)||0;
+let c = r - currentTotal;
+
+document.getElementById("change").innerText = "เงินทอน: "+c.toLocaleString();
+}
+
+loadOrders();
+setInterval(loadOrders,5000);
 
 </script>
 
