@@ -6,31 +6,14 @@
 <title>Customize</title>
 
 <style>
-
-/* ===== THEME ===== */
-:root{
---primary:#b52627;
---primary-dark:#8f1d1e;
---cream:#f3e9cb;
---dark:#231a1d;
---accent:#2e7d32;
---accent-dark:#256628;
-
---radius:14px;
---shadow:0 6px 16px rgba(0,0,0,0.08);
-}
-
-/* ===== BASE ===== */
 body{
 font-family:-apple-system, BlinkMacSystemFont;
-background:var(--cream);
+background:#f5f5f5;
 margin:0;
-color:var(--dark);
 }
 
-/* HEADER */
 .header{
-background:var(--primary);
+background:#c0392b;
 color:white;
 padding:15px;
 text-align:center;
@@ -38,7 +21,6 @@ font-size:22px;
 font-weight:bold;
 }
 
-/* SECTION */
 .section{
 padding:15px;
 }
@@ -47,19 +29,17 @@ padding:15px;
 margin-bottom:10px;
 }
 
-/* GRID */
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
 gap:15px;
 }
 
-/* CARD */
 .card{
 background:white;
-border-radius:var(--radius);
+border-radius:14px;
 overflow:hidden;
-box-shadow:var(--shadow);
+box-shadow:0 3px 10px rgba(0,0,0,0.08);
 cursor:pointer;
 transition:0.2s;
 }
@@ -68,20 +48,16 @@ transition:0.2s;
 transform:scale(0.97);
 }
 
-/* ACTIVE = premium look */
 .card.active{
-outline:3px solid var(--primary);
-transform:translateY(-3px);
+outline:3px solid #e74c3c;
 }
 
-/* IMAGE */
 .card img{
 width:100%;
 height:140px;
 object-fit:cover;
 }
 
-/* TEXT */
 .card h3{
 margin:10px;
 font-size:16px;
@@ -90,74 +66,30 @@ text-align:center;
 
 .price{
 text-align:center;
-color:var(--primary);
+color:#e74c3c;
 font-weight:bold;
 margin-bottom:10px;
 }
 
-/* TOTAL */
 .total{
 font-size:22px;
-color:var(--primary);
+color:#e74c3c;
 font-weight:bold;
 text-align:center;
 margin:15px;
 }
 
-/* BUTTON */
 button{
 margin:10px;
-padding:14px;
+padding:12px;
 width:calc(100% - 20px);
 border:none;
-border-radius:12px;
-background:var(--accent);
+border-radius:10px;
+background:#e74c3c;
 color:white;
 font-size:16px;
 font-weight:bold;
 }
-
-/* ===== FLOATING CART ===== */
-.floating-cart{
-position:fixed;
-bottom:20px;
-right:20px;
-background:var(--primary);
-color:white;
-width:60px;
-height:60px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:22px;
-box-shadow:0 6px 16px rgba(0,0,0,0.2);
-z-index:999;
-}
-
-/* BADGE */
-#cartBadge{
-position:absolute;
-top:-5px;
-right:-5px;
-background:#ff3b30;
-color:white;
-font-size:12px;
-font-weight:bold;
-padding:4px 7px;
-border-radius:50%;
-}
-
-/* POP */
-.pop{
-animation:pop 0.3s ease;
-}
-@keyframes pop{
-0%{transform:scale(1);}
-50%{transform:scale(1.3);}
-100%{transform:scale(1);}
-}
-
 </style>
 </head>
 
@@ -169,22 +101,134 @@ animation:pop 0.3s ease;
 <h2 id="menuName"></h2>
 </div>
 
-<!-- (โครง menu เหมือนเดิม ไม่เปลี่ยน) -->
+<!-- ✅ เลือกเส้น -->
+<div class="section pasta-section">
+<h2>เลือกเส้น</h2>
+<div class="grid">
 
-<!-- ===== FLOATING CART ===== -->
-<div class="floating-cart" onclick="goCart()">
-🛒
-<span id="cartBadge">0</span>
+<div class="card active" onclick="selectOption(this,'pasta',0)">
+<img src="images/spaghetti.jpg">
+<h3>สปาเก็ตตี้</h3>
+<p class="price">+0</p>
 </div>
+
+<div class="card" onclick="selectOption(this,'pasta',0)">
+<img src="images/penne.jpg">
+<h3>เพนเน</h3>
+<p class="price">+0</p>
+</div>
+
+<div class="card" onclick="selectOption(this,'pasta',0)">
+<img src="images/angel.jpg">
+<h3>แองเจิลแฮร์</h3>
+<p class="price">+0</p>
+</div>
+
+<div class="card" onclick="selectOption(this,'pasta',20)">
+<img src="images/fettuccine.jpg">
+<h3>เฟตตูชินี</h3>
+<p class="price">+20</p>
+</div>
+
+<div class="card" onclick="selectOption(this,'pasta',20)">
+<img src="images/bucatini.jpg">
+<h3>บูคาตินี</h3>
+<p class="price">+20</p>
+</div>
+
+</div>
+</div>
+
+<!-- ✅ เนื้อ -->
+<div class="section protein-section">
+<h2>เลือกเนื้อสัตว์</h2>
+<div class="grid">
+
+<div class="card active" onclick="selectOption(this,'protein',0)">
+<img src="images/bacon.jpg">
+<h3>เบคอน</h3>
+<p class="price">+0</p>
+</div>
+
+<div class="card" onclick="selectOption(this,'protein',0)">
+<img src="images/sausage.jpg">
+<h3>ดับเบิ้ลซอสเซจ</h3>
+<p class="price">+0</p>
+</div>
+
+<div class="card" onclick="selectOption(this,'protein',10)">
+<img src="images/chicken.jpg">
+<h3>สเต็กไก่ซูวี</h3>
+<p class="price">+10</p>
+</div>
+
+<div class="card" onclick="selectOption(this,'protein',10)">
+<img src="images/spicy-chicken.jpg">
+<h3>ไก่สไปซี่กาลิค</h3>
+<p class="price">+10</p>
+</div>
+
+<div class="card" onclick="selectOption(this,'protein',30)">
+<img src="images/beef.jpg">
+<h3>เนื้อออส</h3>
+<p class="price">+30</p>
+</div>
+
+<div class="card" onclick="selectOption(this,'protein',30)">
+<img src="images/shrimp.jpg">
+<h3>กุ้ง</h3>
+<p class="price">+30</p>
+</div>
+
+</div>
+</div>
+
+<!-- ✅ TOPPING -->
+<div class="section topping-section">
+<h2>เพิ่มท็อปปิ้ง</h2>
+<div class="grid">
+
+<div class="card" onclick="toggleTopping(this,20)">
+<img src="images/crispy-bacon.jpg">
+<h3>เบคอนกรอบ</h3>
+<p class="price">+20</p>
+</div>
+
+<div class="card" onclick="toggleTopping(this,20)">
+<img src="images/seaweed.jpg">
+<h3>สาหร่าย</h3>
+<p class="price">+20</p>
+</div>
+
+<div class="card" onclick="toggleTopping(this,20)">
+<img src="images/ebiko.jpg">
+<h3>ไข่กุ้ง</h3>
+<p class="price">+20</p>
+</div>
+
+<div class="card" onclick="toggleTopping(this,20)">
+<img src="images/cheese.jpg">
+<h3>ชีส</h3>
+<p class="price">+20</p>
+</div>
+
+</div>
+</div>
+
+<div class="total">
+รวม: <span id="totalPrice">0</span> บาท
+</div>
+
+<button onclick="addToCart()">เพิ่มลงตะกร้า</button>
 
 <script>
 
-// ===== MENU =====
+// menu
 const params = new URLSearchParams(window.location.search);
 const menu = params.get("menu");
 document.getElementById("menuName").innerText = menu;
 
-// ===== PRICE =====
+// ราคา base
 const priceMap = {
 "Carbonara":139,
 "Bolognese":139,
@@ -197,11 +241,11 @@ const priceMap = {
 };
 
 let basePrice = priceMap[menu] || 0;
+
 let pastaPrice = 0;
 let proteinPrice = 0;
 let toppingTotal = 0;
 
-// ===== SELECT =====
 function selectOption(el,type,price){
 let group = el.parentElement;
 group.querySelectorAll(".card").forEach(c=>c.classList.remove("active"));
@@ -225,35 +269,24 @@ toppingTotal -= price;
 calculate();
 }
 
-// ===== CALCULATE =====
 function calculate(){
 let total = basePrice + pastaPrice + proteinPrice + toppingTotal;
 document.getElementById("totalPrice").innerText = total;
 }
 
-// ===== CART BADGE =====
-function updateCartCount(animated=false){
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+calculate();
 
-let totalQty = 0;
-cart.forEach(i=> totalQty += i.qty);
+// ✅ FIXED addToCart
 
-let badge = document.getElementById("cartBadge");
-badge.innerText = totalQty;
-badge.style.display = totalQty>0?"block":"none";
-
-if(animated){
-let btn = document.querySelector(".floating-cart");
-btn.classList.add("pop");
-setTimeout(()=>btn.classList.remove("pop"),300);
-}
-}
-
-// ===== ADD TO CART =====
 function addToCart(){
+
+console.log("CLICK ADD");
 
 let pastaEl = document.querySelector('.pasta-section .card.active h3');
 let proteinEl = document.querySelector('.protein-section .card.active h3');
+
+console.log("PASTA:", pastaEl);
+console.log("PROTEIN:", proteinEl);
 
 if(!pastaEl || !proteinEl){
 alert("กรุณาเลือกเส้นและเนื้อ");
@@ -273,31 +306,18 @@ price: parseInt(document.getElementById("totalPrice").innerText),
 qty: 1
 };
 
+console.log("ITEM:", item);
+
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
 cart.push(item);
+
 localStorage.setItem("cart", JSON.stringify(cart));
 
-// animation cart
-updateCartCount(true);
+console.log("SAVED CART:", cart);
 
-// delay แล้วค่อยไปหน้า cart
-setTimeout(()=>{
-window.location.href = "cart.html";
-},400);
-}
-
-// ===== NAV =====
-function goCart(){
 window.location.href = "cart.html";
 }
-
-// INIT
-calculate();
-updateCartCount();
-
-window.addEventListener("focus", ()=>{
-updateCartCount();
-});
 
 </script>
 
