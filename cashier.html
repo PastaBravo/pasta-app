@@ -13,65 +13,68 @@
 --success:#2e7d32;
 }
 
-body{
-font-family:-apple-system;
-margin:0;
-background:var(--cream);
-}
+body{margin:0;font-family:-apple-system;background:var(--cream);}
 
-/* HEADER */
 .header{
 background:var(--primary);
-color:white;
-padding:15px;
+color:#fff;
+padding:14px;
 text-align:center;
-font-size:20px;
 font-weight:bold;
 }
 
-/* SEARCH */
-.search-box{
-padding:15px;
+.container{
 display:flex;
-gap:10px;
+height:calc(100vh - 60px);
 }
 
-.search-box input{
+/* LEFT: ORDER LIST */
+.left{
+width:35%;
+background:#fff;
+overflow:auto;
+border-right:1px solid #ddd;
+}
+
+.order{
+padding:12px;
+border-bottom:1px solid #eee;
+cursor:pointer;
+}
+
+.order:hover{background:#fafafa;}
+
+.order.active{
+background:#f3e9cb;
+}
+
+/* RIGHT: RECEIPT */
+.right{
 flex:1;
-padding:14px;
-font-size:20px;
-border-radius:10px;
-border:1px solid #ccc;
+display:flex;
+flex-direction:column;
 }
 
-/* NUMPAD */
-.numpad{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:10px;
-padding:15px;
-}
-
-.numpad button{
-padding:20px;
-font-size:20px;
-border:none;
-border-radius:10px;
-background:white;
-}
-
-/* RECEIPT */
 .receipt{
-background:white;
+flex:1;
+background:#fff;
 margin:15px;
 padding:15px;
 border-radius:10px;
+overflow:auto;
+}
+
+.item{
+border-bottom:1px dashed #ddd;
+margin-bottom:8px;
+padding-bottom:6px;
 }
 
 .total{
 font-size:22px;
 font-weight:bold;
 text-align:right;
+margin-top:10px;
 }
 
 /* PAYMENT */
@@ -81,7 +84,7 @@ padding:15px;
 
 .payment input{
 width:100%;
-padding:14px;
+padding:12px;
 font-size:18px;
 margin-bottom:10px;
 }
@@ -89,28 +92,41 @@ margin-bottom:10px;
 .payment button{
 width:100%;
 padding:14px;
+border:none;
+border-radius:10px;
 background:var(--success);
 color:white;
+font-size:18px;
+margin-bottom:10px;
+}
+
+/* ACTION */
+.actions{
+display:flex;
+gap:10px;
+padding:0 15px 15px;
+}
+
+.actions button{
+flex:1;
+padding:14px;
 border:none;
 border-radius:10px;
-font-size:18px;
+font-size:16px;
 }
+
+.print{background:#231a1d;color:white;}
+.paid{background:#2e7d32;color:white;}
 
 /* PRINT */
-.print-btn{
-margin:15px;
-padding:14px;
-width:calc(100% - 30px);
-background:#231a1d;
-color:white;
-border:none;
-border-radius:10px;
+@media print{
+.left,.payment,.actions,.header{
+display:none;
 }
 
-/* PRINT MODE */
-@media print{
-.numpad,.search-box,.payment,.print-btn{
-display:none;
+.receipt{
+margin:0;
+box-shadow:none;
 }
 }
 </style>
@@ -118,28 +134,19 @@ display:none;
 
 <body>
 
-<div class="header">🍝 Pasta Bravo POS</div>
+<div class="header">💰 CASHIER</div>
 
-<div class="search-box">
-<input id="search" placeholder="เลขออเดอร์">
+<div class="container">
+
+<!-- LEFT -->
+<div class="left" id="orderList"></div>
+
+<!-- RIGHT -->
+<div class="right">
+
+<div class="receipt" id="receiptBox">
+เลือกออเดอร์
 </div>
-
-<div class="numpad">
-<button onclick="press(1)">1</button>
-<button onclick="press(2)">2</button>
-<button onclick="press(3)">3</button>
-<button onclick="press(4)">4</button>
-<button onclick="press(5)">5</button>
-<button onclick="press(6)">6</button>
-<button onclick="press(7)">7</button>
-<button onclick="press(8)">8</button>
-<button onclick="press(9)">9</button>
-<button onclick="clearInput()">C</button>
-<button onclick="press(0)">0</button>
-<button onclick="searchOrder()">🔍</button>
-</div>
-
-<div class="receipt" id="receiptBox">รอค้นหาออเดอร์</div>
 
 <div class="payment">
 <input id="receive" placeholder="รับเงิน">
@@ -147,7 +154,14 @@ display:none;
 <div id="change"></div>
 </div>
 
-<button class="print-btn" onclick="window.print()">🖨 พิมพ์ใบเสร็จ</button>
+<div class="actions">
+<button class="print" onclick="window.print()">🖨 พิมพ์</button>
+<button class="paid" onclick="markPaid()">✅ ชำระเงินแล้ว</button>
+</div>
+
+</div>
+
+</div>
 
 <script>
 
@@ -155,81 +169,85 @@ const API_URL = "https://script.google.com/macros/s/AKfycbylb0DcxAvjqdNk9SLrdUuf
 
 let rawData = [];
 let orders = [];
+let currentOrder = null;
 let currentTotal = 0;
 
-let audio = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
-
-// ===== LOAD =====
+// ===== โหลดรายการ =====
 async function loadOrders(){
 let res = await fetch(API_URL);
 rawData = await res.json();
-orders = groupOrders(rawData);
+
+let grouped = groupOrders(rawData);
+
+// เอา order ที่จ่ายแล้วออก (client side)
+let paidIds = JSON.parse(localStorage.getItem("paidOrders")||"[]");
+
+orders = grouped.filter(o => !paidIds.includes(o.id));
+
+renderOrderList();
 }
 
-// ===== GROUP =====
+// ===== group =====
 function groupOrders(data){
+
 let map = {};
 
 data.forEach(row=>{
-let id = row.id;
 
-if(!map[id]){
-map[id] = {id:id,time:row.time,items:[]};
+if(!map[row.id]){
+map[row.id] = {id:row.id,time:row.time,items:[]};
 }
 
-map[id].items.push(JSON.parse(row.item));
+map[row.id].items.push(JSON.parse(row.item));
+
 });
 
-return Object.values(map);
+return Object.values(map).reverse();
 }
 
-// ===== NUMPAD =====
-function press(num){
-document.getElementById("search").value += num;
+// ===== render left =====
+function renderOrderList(){
+
+let html = "";
+
+orders.forEach((o,i)=>{
+
+html += `
+<div class="order" onclick="selectOrder(${i})">
+<b>${o.id}</b><br>
+<small>${o.time}</small>
+</div>
+`;
+
+});
+
+document.getElementById("orderList").innerHTML = html;
 }
 
-function clearInput(){
-document.getElementById("search").value = "";
-}
+// ===== select =====
+function selectOrder(i){
 
-// ===== SEARCH =====
-function searchOrder(){
-
-let key = document.getElementById("search").value;
-
-let order = orders.find(o => o.id.includes(key));
-
-if(!order){
-alert("ไม่พบ");
-return;
-}
-
-audio.play();
-
-render(order);
-}
-
-// ===== RENDER =====
-function render(order){
+currentOrder = orders[i];
 
 let html = `
-<div><b>${order.id}</b></div>
-<div>${order.time}</div><hr>
+<div><b>${currentOrder.id}</b></div>
+<div>${currentOrder.time}</div><hr>
 `;
 
 let total = 0;
 
-order.items.forEach(item=>{
+currentOrder.items.forEach(item=>{
+
 let sum = item.price * item.qty;
 total += sum;
 
 html += `
-<div>
+<div class="item">
 ${item.menu} x${item.qty}<br>
 ${sum.toLocaleString()} บาท
-<hr>
 </div>
 `;
+
 });
 
 html += `<div class="total">รวม ${total.toLocaleString()} บาท</div>`;
@@ -239,14 +257,42 @@ currentTotal = total;
 document.getElementById("receiptBox").innerHTML = html;
 }
 
-// ===== CHANGE =====
+// ===== calc =====
 function calcChange(){
+
 let r = parseFloat(document.getElementById("receive").value)||0;
 let c = r - currentTotal;
 
-document.getElementById("change").innerText = "เงินทอน: "+c.toLocaleString();
+document.getElementById("change").innerText =
+"เงินทอน: "+c.toLocaleString()+" บาท";
+
+// แสดงบนบิลด้วย
+document.getElementById("receiptBox").innerHTML +=
+`<div class="total">รับ ${r} | ทอน ${c.toLocaleString()}</div>`;
 }
 
+// ===== mark paid =====
+function markPaid(){
+
+if(!currentOrder) return;
+
+let paid = JSON.parse(localStorage.getItem("paidOrders")||"[]");
+
+paid.push(currentOrder.id);
+
+localStorage.setItem("paidOrders",JSON.stringify(paid));
+
+// รีโหลด
+loadOrders();
+
+document.getElementById("receiptBox").innerHTML = "เลือกออเดอร์";
+document.getElementById("change").innerText = "";
+document.getElementById("receive").value = "";
+
+currentOrder = null;
+}
+
+// auto refresh
 loadOrders();
 setInterval(loadOrders,5000);
 
@@ -254,3 +300,4 @@ setInterval(loadOrders,5000);
 
 </body>
 </html>
+
