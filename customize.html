@@ -26,7 +26,6 @@ font-family:-apple-system, BlinkMacSystemFont;
 background:var(--cream);
 margin:0;
 color:var(--dark);
-padding-bottom:100px;
 }
 
 /* HEADER */
@@ -69,17 +68,20 @@ transition:0.2s;
 transform:scale(0.97);
 }
 
+/* ACTIVE = premium look */
 .card.active{
 outline:3px solid var(--primary);
 transform:translateY(-3px);
 }
 
+/* IMAGE */
 .card img{
 width:100%;
 height:140px;
 object-fit:cover;
 }
 
+/* TEXT */
 .card h3{
 margin:10px;
 font-size:16px;
@@ -102,10 +104,23 @@ text-align:center;
 margin:15px;
 }
 
-/* FLOATING CART */
+/* BUTTON */
+button{
+margin:10px;
+padding:14px;
+width:calc(100% - 20px);
+border:none;
+border-radius:12px;
+background:var(--accent);
+color:white;
+font-size:16px;
+font-weight:bold;
+}
+
+/* ===== FLOATING CART ===== */
 .floating-cart{
 position:fixed;
-bottom:90px;
+bottom:20px;
 right:20px;
 background:var(--primary);
 color:white;
@@ -120,6 +135,7 @@ box-shadow:0 6px 16px rgba(0,0,0,0.2);
 z-index:999;
 }
 
+/* BADGE */
 #cartBadge{
 position:absolute;
 top:-5px;
@@ -142,72 +158,6 @@ animation:pop 0.3s ease;
 100%{transform:scale(1);}
 }
 
-/* ===== STICKY BAR ===== */
-.checkout-bar{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-background:white;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:12px 15px;
-box-shadow:0 -4px 12px rgba(0,0,0,0.08);
-z-index:1000;
-}
-
-.price-label{
-font-size:12px;
-color:#777;
-}
-
-.price-value{
-font-size:20px;
-font-weight:bold;
-color:var(--primary);
-}
-
-/* BUTTON */
-.checkout-btn{
-background:var(--accent);
-color:white;
-border:none;
-border-radius:12px;
-padding:14px 20px;
-font-size:16px;
-font-weight:bold;
-min-width:180px;
-}
-
-.checkout-btn.disabled{
-background:#ccc;
-color:#666;
-pointer-events:none;
-}
-
-/* SHAKE */
-.shake{
-animation:shake 0.4s;
-}
-@keyframes shake{
-0%{transform:translateX(0);}
-25%{transform:translateX(-5px);}
-50%{transform:translateX(5px);}
-75%{transform:translateX(-5px);}
-100%{transform:translateX(0);}
-}
-
-/* PRICE POP */
-.price-pop{
-animation:pricePop 0.25s;
-}
-@keyframes pricePop{
-0%{transform:scale(1);}
-50%{transform:scale(1.2);}
-100%{transform:scale(1);}
-}
-
 </style>
 </head>
 
@@ -219,24 +169,12 @@ animation:pricePop 0.25s;
 <h2 id="menuName"></h2>
 </div>
 
-<!-- ⚠️ ใช้โครง menu เดิมของคุณ (pasta / protein / topping) -->
+<!-- (โครง menu เหมือนเดิม ไม่เปลี่ยน) -->
 
-<!-- FLOATING CART -->
+<!-- ===== FLOATING CART ===== -->
 <div class="floating-cart" onclick="goCart()">
 🛒
 <span id="cartBadge">0</span>
-</div>
-
-<!-- STICKY CHECKOUT -->
-<div class="checkout-bar">
-  <div>
-    <div class="price-label">รวม</div>
-    <div class="price-value"><span id="stickyPrice">0</span> บาท</div>
-  </div>
-
-  <button id="checkoutBtn" class="checkout-btn disabled" onclick="handleCheckout()">
-    เลือกเส้นก่อน
-  </button>
 </div>
 
 <script>
@@ -290,85 +228,10 @@ calculate();
 // ===== CALCULATE =====
 function calculate(){
 let total = basePrice + pastaPrice + proteinPrice + toppingTotal;
-
-let priceEl = document.getElementById("totalPrice");
-let stickyEl = document.getElementById("stickyPrice");
-
-if(priceEl){
-priceEl.classList.add("price-pop");
-setTimeout(()=>priceEl.classList.remove("price-pop"),200);
-priceEl.innerText = total;
+document.getElementById("totalPrice").innerText = total;
 }
 
-stickyEl.classList.add("price-pop");
-setTimeout(()=>stickyEl.classList.remove("price-pop"),200);
-stickyEl.innerText = total;
-
-updateCheckoutUI();
-}
-
-// ===== SMART BUTTON =====
-function updateCheckoutUI(){
-
-let pastaSelected = document.querySelector('.pasta-section .card.active');
-let proteinSelected = document.querySelector('.protein-section .card.active');
-
-let btn = document.getElementById("checkoutBtn");
-
-if(!pastaSelected){
-btn.innerText = "เลือกเส้นก่อน";
-btn.classList.add("disabled");
-return;
-}
-
-if(!proteinSelected){
-btn.innerText = "เลือกเนื้อก่อน";
-btn.classList.add("disabled");
-return;
-}
-
-btn.classList.remove("disabled");
-
-let total = document.getElementById("stickyPrice").innerText;
-btn.innerText = `เพิ่มลงตะกร้า • ${total} บาท`;
-}
-
-// ===== CLICK BUTTON =====
-function handleCheckout(){
-
-let pastaSelected = document.querySelector('.pasta-section .card.active');
-let proteinSelected = document.querySelector('.protein-section .card.active');
-
-if(!pastaSelected){
-highlightSection('.pasta-section');
-return;
-}
-
-if(!proteinSelected){
-highlightSection('.protein-section');
-return;
-}
-
-addToCart();
-}
-
-// ===== HIGHLIGHT =====
-function highlightSection(selector){
-let section = document.querySelector(selector);
-
-section.classList.add("shake");
-
-section.scrollIntoView({
-behavior:"smooth",
-block:"center"
-});
-
-setTimeout(()=>{
-section.classList.remove("shake");
-},400);
-}
-
-// ===== CART =====
+// ===== CART BADGE =====
 function updateCartCount(animated=false){
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -377,7 +240,7 @@ cart.forEach(i=> totalQty += i.qty);
 
 let badge = document.getElementById("cartBadge");
 badge.innerText = totalQty;
-badge.style.display = totalQty>0?"block":"block";
+badge.style.display = totalQty>0?"block":"none";
 
 if(animated){
 let btn = document.querySelector(".floating-cart");
@@ -386,10 +249,16 @@ setTimeout(()=>btn.classList.remove("pop"),300);
 }
 }
 
+// ===== ADD TO CART =====
 function addToCart(){
 
 let pastaEl = document.querySelector('.pasta-section .card.active h3');
 let proteinEl = document.querySelector('.protein-section .card.active h3');
+
+if(!pastaEl || !proteinEl){
+alert("กรุณาเลือกเส้นและเนื้อ");
+return;
+}
 
 let toppings = [];
 document.querySelectorAll('.topping-section .card.active h3')
@@ -400,7 +269,7 @@ menu: menu,
 pasta: pastaEl.innerText,
 protein: proteinEl.innerText,
 topping: toppings.join(", ") || "-",
-price: parseInt(document.getElementById("stickyPrice").innerText),
+price: parseInt(document.getElementById("totalPrice").innerText),
 qty: 1
 };
 
@@ -408,8 +277,10 @@ let cart = JSON.parse(localStorage.getItem("cart")) || [];
 cart.push(item);
 localStorage.setItem("cart", JSON.stringify(cart));
 
+// animation cart
 updateCartCount(true);
 
+// delay แล้วค่อยไปหน้า cart
 setTimeout(()=>{
 window.location.href = "cart.html";
 },400);
@@ -423,7 +294,6 @@ window.location.href = "cart.html";
 // INIT
 calculate();
 updateCartCount();
-updateCheckoutUI();
 
 window.addEventListener("focus", ()=>{
 updateCartCount();
