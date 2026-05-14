@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -7,6 +6,7 @@
 <title>Cart</title>
 
 <style>
+
 :root{
 --primary:#b52627;
 --primary-dark:#8f1d1e;
@@ -57,6 +57,7 @@ font-size:16px;
 font-size:13px;
 color:#666;
 margin-top:6px;
+line-height:1.5;
 }
 
 .row{
@@ -64,6 +65,13 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 margin-top:12px;
+gap:10px;
+}
+
+.qty{
+display:flex;
+align-items:center;
+gap:8px;
 }
 
 .qty button{
@@ -72,6 +80,7 @@ border:none;
 background:#eee;
 border-radius:6px;
 cursor:pointer;
+font-weight:bold;
 }
 
 .remove-btn{
@@ -92,7 +101,14 @@ color:var(--primary);
 
 button{
 cursor:pointer;
+transition:0.2s;
 }
+
+button:active{
+transform:scale(0.97);
+}
+
+/* ===== BUTTONS ===== */
 
 .addMore{
 margin:0 15px 10px;
@@ -104,7 +120,6 @@ background:var(--success);
 color:white;
 font-size:18px;
 font-weight:bold;
-transition:0.2s;
 }
 
 .addMore:hover{
@@ -121,22 +136,20 @@ background:var(--primary);
 color:white;
 font-size:18px;
 font-weight:bold;
-transition:0.2s;
 }
 
 .checkout:hover{
 background:var(--primary-dark);
 }
 
-button:active{
-transform:scale(0.97);
-}
 </style>
 </head>
 
 <body>
 
-<div class="header">🛒 ตะกร้า</div>
+<div class="header">
+🛒 ตะกร้า
+</div>
 
 <div class="container" id="cartList"></div>
 
@@ -144,24 +157,39 @@ transform:scale(0.97);
 รวม: <span id="totalPrice">0</span> บาท
 </div>
 
-<button class="addMore" onclick="goMenu()">➕ สั่งเพิ่ม</button>
-<button class="checkout" onclick="checkout()">ส่งออเดอร์</button>
+<button class="addMore" onclick="goMenu()">
+➕ สั่งเพิ่ม
+</button>
+
+<button class="checkout" onclick="checkout()">
+ส่งออเดอร์
+</button>
 
 <script>
 
 // ===== API URL =====
-const API_URL = "https://script.google.com/macros/s/AKfycbylb0DcxAvjqdNk9SLrdUuf80svwCHJLQVMlozS_GA_5Tt6RAr20172Tcl_c1q7v7Zf/exec";
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbzMy-v9IdGErhf_DWJ6qLy4pMgVTkQEl6_5JJwhS3QVP1F1FjierhcBCYc4SCYxVAZ2/exec";
 
 // ===== LOAD CART =====
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-// ===== RENDER =====
+let cart =
+JSON.parse(localStorage.getItem("cart")) || [];
+
+// ===== RENDER CART =====
+
 function renderCart(){
 
 if(cart.length === 0){
 
 document.getElementById("cartList").innerHTML = `
-<div style="text-align:center;padding:40px;color:#777">
+<div style="
+text-align:center;
+padding:40px;
+color:#777;
+font-size:18px;
+">
 ไม่มีสินค้าในตะกร้า 🛒
 </div>
 `;
@@ -177,9 +205,12 @@ let total = 0;
 
 cart.forEach((item,index)=>{
 
-total += item.price * item.qty;
+let lineTotal = item.price * item.qty;
+
+total += lineTotal;
 
 html += `
+
 <div class="item">
 
 <div class="name">
@@ -194,129 +225,35 @@ ${item.topping}
 <div class="row">
 
 <div class="qty">
-<button onclick="changeQty(${index},-1)">-</button>
-${item.qty}
-<button onclick="changeQty(${index},1)">+</button>
-</div>
+
+<button onclick="changeQty(${index},-1)">
+-
+</button>
 
 <div>
-${(item.price * item.qty).toLocaleString()} บาท
+${item.qty}
 </div>
 
-<button class="remove-btn" onclick="removeItem(${index})">
-❌
+<button onclick="changeQty(${index},1)">
++
 </button>
 
 </div>
 
-</div>
-`;
-
-});
-
-document.getElementById("cartList").innerHTML = html;
-
-document.getElementById("totalPrice").innerText =
-total.toLocaleString();
-
-}
-
-renderCart();
-
-// ===== QTY =====
-function changeQty(i,delta){
-
-cart[i].qty += delta;
-
-if(cart[i].qty <= 0){
-
-cart.splice(i,1);
-
-}
-
-saveCart();
-
-}
-
-function removeItem(i){
-
-cart.splice(i,1);
-
-saveCart();
-
-}
-
-function saveCart(){
-
-localStorage.setItem("cart", JSON.stringify(cart));
-
-renderCart();
-
-}
-
-// ===== NAV =====
-function goMenu(){
-
-window.location.href = "index.html";
-
-}
-
-// ===== CHECKOUT =====
-async function checkout(){
-
-<script>
-
-// ✅ โหลด cart
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-// ===== RENDER =====
-function renderCart(){
-
-if(cart.length === 0){
-document.getElementById("cartList").innerHTML = `
-<div style="text-align:center;padding:40px;color:#777">
-ไม่มีสินค้าในตะกร้า 🛒
-</div>
-`;
-document.getElementById("totalPrice").innerText = 0;
-return;
-}
-
-let html = "";
-let total = 0;
-
-cart.forEach((item, index)=>{
-
-total += item.price * item.qty;
-
-html += `
-<div class="item">
-<div class="name">${item.menu}</div>
-
-<div class="detail">
-${item.pasta} | ${item.protein}<br>
-${item.topping}
-</div>
-
-<div class="row">
-
-<div class="qty">
-<button onclick="changeQty(${index},-1)">-</button>
-${item.qty}
-<button onclick="changeQty(${index},1)">+</button>
-</div>
-
 <div>
-${(item.price * item.qty).toLocaleString()} บาท
+${lineTotal.toLocaleString()} บาท
 </div>
 
-<button class="remove-btn"
+<button
+class="remove-btn"
 onclick="removeItem(${index})">
 ❌
 </button>
 
 </div>
+
 </div>
+
 `;
 
 });
@@ -330,19 +267,23 @@ total.toLocaleString();
 
 renderCart();
 
-// ===== QTY =====
+// ===== CHANGE QTY =====
 
 function changeQty(i,delta){
 
 cart[i].qty += delta;
 
 if(cart[i].qty <= 0){
+
 cart.splice(i,1);
+
 }
 
 saveCart();
 
 }
+
+// ===== REMOVE =====
 
 function removeItem(i){
 
@@ -351,6 +292,8 @@ cart.splice(i,1);
 saveCart();
 
 }
+
+// ===== SAVE =====
 
 function saveCart(){
 
@@ -373,7 +316,7 @@ window.location.href = "index.html";
 
 // ===== CHECKOUT =====
 
-function checkout(){
+async function checkout(){
 
 if(cart.length === 0){
 
@@ -383,11 +326,8 @@ return;
 
 }
 
-// โหลด orders เดิม
-let orders =
-JSON.parse(localStorage.getItem("orders")) || [];
+// ===== CREATE ORDER =====
 
-// สร้าง order ใหม่
 let newOrder = {
 
 id: Date.now(),
@@ -398,21 +338,53 @@ items: cart
 
 };
 
-// เพิ่มเข้า orders
+try{
+
+// ===== SEND TO APPS SCRIPT =====
+
+await fetch(API_URL,{
+
+method:"POST",
+
+body: JSON.stringify(newOrder)
+
+});
+
+// ===== SAVE LOCAL ORDER =====
+
+let orders =
+JSON.parse(localStorage.getItem("orders")) || [];
+
 orders.unshift(newOrder);
 
-// save orders
 localStorage.setItem(
 "orders",
 JSON.stringify(orders)
 );
 
-// ล้าง cart
+// ===== CLEAR CART =====
+
 localStorage.removeItem("cart");
 
-// ไป cashier
+// ===== SUCCESS =====
+
+alert("ส่งออเดอร์เรียบร้อย");
+
+// ===== GO CASHIER =====
+
 window.location.href = "cashier.html";
+
+}catch(err){
+
+console.error(err);
+
+alert("ส่งออเดอร์ไม่สำเร็จ");
+
+}
 
 }
 
 </script>
+
+</body>
+</html>
